@@ -113,4 +113,8 @@ public class OrderServiceImpl implements OrderService {
 
         return order;
     }
+    
+    public void saveAll() {
+    	System.out.println("save all");
+    }
 }
