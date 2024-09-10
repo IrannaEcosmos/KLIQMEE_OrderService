@@ -5,6 +5,8 @@ import com.example.Test.dao.OrderDao;
 import com.example.Test.dto.Item;
 import com.example.Test.dto.Order;
 import com.example.Test.repo.OrderRepo;
+import com.example.Test.util.EncodingUtil;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,18 +24,42 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepo orderRepository;
     
+    @Autowired
+    private EncodingUtil encodingUtil;
+    
     @Override
     public Order createOrder(OrderDao orderDao, String userId) {
         Order order = mapOrderDaoToOrder(orderDao);
         order.setUserId(userId);  // Assuming the setter is named setUserId
+        
 
+//        try {
+//            Order savedOrder = orderRepository.save(order);
+//            logger.info("Order created successfully with ID: {}", savedOrder.getId());
+//            return savedOrder;
+//        } catch (Exception e) {
+//            logger.error("Failed to save order", e);
+//            throw new RuntimeException("Failed to save order: " + e.getMessage());
+//        }
+//    }
         try {
+            // Save the order first without the QR code ID
             Order savedOrder = orderRepository.save(order);
             logger.info("Order created successfully with ID: {}", savedOrder.getId());
-            return savedOrder;
+
+            // Generate QR code ID using StringBuffer
+            String qrcodeId = encodingUtil.generateQRCodeId(savedOrder.getId());
+
+            // Update the saved order with the generated QR code ID
+            savedOrder.setQrcode_id(qrcodeId);
+            Order updatedOrder = orderRepository.save(savedOrder);
+
+            logger.info("QR code ID generated and saved successfully: {}", qrcodeId);
+
+            return updatedOrder;
         } catch (Exception e) {
-            logger.error("Failed to save order", e);
-            throw new RuntimeException("Failed to save order: " + e.getMessage());
+            logger.error("Failed to create order", e);
+            throw new RuntimeException("Failed to create order: " + e.getMessage());
         }
     }
 
