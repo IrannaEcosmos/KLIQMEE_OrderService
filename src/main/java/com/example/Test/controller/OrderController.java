@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/order")
@@ -46,6 +47,20 @@ public class OrderController {
             logger.error("Unexpected error occurred while creating order", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An unexpected error occurred while creating the order");
+        }
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrder(@PathVariable String id) {
+        logger.info("Received request to fetch order with ID: {}", id);
+        Optional<Order> order = orderService.getOrder(id);
+ 
+        if (order.isPresent()) {
+            logger.info("Order found with ID: {}", id);
+            return ResponseEntity.ok(order.get());
+        } else {
+            logger.warn("Order not found with ID: {}", id);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Order not found");
         }
     }
 
