@@ -16,4 +16,6 @@ public interface OrderService {
 
 	boolean deleteOrderForUser(String userId);
 
+	Optional<Order> getOrder(String id);
+
 }

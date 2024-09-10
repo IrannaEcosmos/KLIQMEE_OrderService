@@ -36,6 +36,12 @@ public class OrderServiceImpl implements OrderService {
             throw new RuntimeException("Failed to save order: " + e.getMessage());
         }
     }
+    
+    @Override
+    public Optional<Order> getOrder(String id) {
+        logger.info("Fetching order with ID: {}", id);
+        return orderRepository.findById(id);
+    }
 
     @Override
     public List<Order> getAllOrdersForUser(String userId) {
@@ -114,7 +120,5 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
     
-    public void saveAll() {
-    	System.out.println("save all");
-    }
+    
 }
